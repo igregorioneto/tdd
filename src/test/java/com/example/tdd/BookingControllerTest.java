@@ -1,33 +1,66 @@
 package com.example.tdd;
 
+import com.example.tdd.controllers.BookingController;
 import com.example.tdd.model.BookingModel;
+import com.example.tdd.services.BookingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+//@SpringBootTest
+//@AutoConfigureMockMvc
+@WebMvcTest
 public class BookingControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private BookingController controller;
+
+    @MockBean
+    private BookingService service;
 
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MockMvc mvc;
+
+    @BeforeEach
+    public void setup() {
+        standaloneSetup(this.controller);
+    }
+
     @Test
-    public void bookingTestGetAll() throws Exception {
-        mockMvc.perform(get("/bookings"))
-                .andExpect(status().isOk());
+    public void bookingTestGetAll() {
+        given()
+            .accept(ContentType.JSON)
+        .when()
+            .get("/bookings")
+        .then()
+            .statusCode(HttpStatus.SC_OK);
     }
 
     @Test
@@ -35,13 +68,19 @@ public class BookingControllerTest {
         LocalDate checkIn = LocalDate.parse("2022-02-07");
         LocalDate checkOut = LocalDate.parse("2022-02-17");
 
-        BookingModel booking = new BookingModel("1", "João", checkIn, checkOut, 2);
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/bookings")
+                        .content(asJsonString(new BookingModel("1", "João", checkIn, checkOut, 2)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
 
-        mockMvc.perform(
-                post("/bookings")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(booking))
-                )
-                .andExpect(status().isOk());
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
