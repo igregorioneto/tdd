@@ -1,16 +1,17 @@
 package com.example.tdd.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class BookingModel {
 
     private String id;
     private String reserveName;
-    private LocalDate checkIn;
-    private LocalDate checkOut;
+    private Date checkIn;
+    private Date checkOut;
     private int numberGuests;
 
-    public BookingModel(String id, String reserveName, LocalDate checkIn, LocalDate checkOut, int numberGuests) {
+    public BookingModel(String id, String reserveName, Date checkIn, Date checkOut, int numberGuests) {
         this.id = id;
         this.reserveName = reserveName;
         this.checkIn = checkIn;
@@ -34,19 +35,19 @@ public class BookingModel {
         this.reserveName = reserveName;
     }
 
-    public LocalDate getCheckIn() {
+    public Date getCheckIn() {
         return checkIn;
     }
 
-    public void setCheckIn(LocalDate checkIn) {
+    public void setCheckIn(Date checkIn) {
         this.checkIn = checkIn;
     }
 
-    public LocalDate getCheckOut() {
+    public Date getCheckOut() {
         return checkOut;
     }
 
-    public void setCheckOut(LocalDate checkOut) {
+    public void setCheckOut(Date checkOut) {
         this.checkOut = checkOut;
     }
 

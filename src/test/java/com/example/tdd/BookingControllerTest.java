@@ -3,8 +3,14 @@ package com.example.tdd;
 import com.example.tdd.controllers.BookingController;
 import com.example.tdd.model.BookingModel;
 import com.example.tdd.services.BookingService;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +29,11 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
 
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
 
@@ -65,8 +75,9 @@ public class BookingControllerTest {
 
     @Test
     public void bookingTestSave() throws Exception {
-        LocalDate checkIn = LocalDate.parse("2022-02-07");
-        LocalDate checkOut = LocalDate.parse("2022-02-17");
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        Date checkIn = formato.parse("2022-02-07");
+        Date checkOut = formato.parse("2022-02-17");
 
         mvc.perform(MockMvcRequestBuilders
                         .post("/bookings")
