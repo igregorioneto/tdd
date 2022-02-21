@@ -39,6 +39,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@SpringBootTest
@@ -64,33 +65,61 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void bookingTestGetAll() {
-        given()
-            .accept(ContentType.JSON)
-        .when()
-            .get("/bookings")
-        .then()
-            .statusCode(HttpStatus.SC_OK);
+    public void bookingTestGetAll() throws Exception  {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/bookings")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getBookingByIdTest() throws Exception {
+        mvc.perform( MockMvcRequestBuilders
+                .get("/bookings/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
     public void bookingTestSave() throws Exception {
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        Date checkIn = formato.parse("2022-02-07");
-        Date checkOut = formato.parse("2022-02-17");
+        LocalDate checkIn = LocalDate.parse("2022-02-07");
+        LocalDate checkOut = LocalDate.parse("2022-02-17");
 
-        mvc.perform(MockMvcRequestBuilders
+        mvc.perform( MockMvcRequestBuilders
                         .post("/bookings")
                         .content(asJsonString(new BookingModel("1", "João", checkIn, checkOut, 2)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+    }
+
+    @Test
+    public void bookingTestUpdate() throws Exception {
+        LocalDate checkIn = LocalDate.parse("2022-02-07");
+        LocalDate checkOut = LocalDate.parse("2022-02-17");
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/bookings/{id}", 2L)
+                .content(asJsonString(new BookingModel("1", "João2", checkIn, checkOut, 2)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("João2"));
+    }
+
+    @Test
+    public void deleteBookingTest() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.delete("/bookings/{id}", 1L))
+                .andExpect(status().isAccepted());
     }
 
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -7,11 +7,11 @@ public class BookingModel {
 
     private String id;
     private String reserveName;
-    private Date checkIn;
-    private Date checkOut;
+    private LocalDate checkIn;
+    private LocalDate checkOut;
     private int numberGuests;
 
-    public BookingModel(String id, String reserveName, Date checkIn, Date checkOut, int numberGuests) {
+    public BookingModel(String id, String reserveName, LocalDate checkIn, LocalDate checkOut, int numberGuests) {
         this.id = id;
         this.reserveName = reserveName;
         this.checkIn = checkIn;
@@ -35,19 +35,19 @@ public class BookingModel {
         this.reserveName = reserveName;
     }
 
-    public Date getCheckIn() {
+    public LocalDate getCheckIn() {
         return checkIn;
     }
 
-    public void setCheckIn(Date checkIn) {
+    public void setCheckIn(LocalDate checkIn) {
         this.checkIn = checkIn;
     }
 
-    public Date getCheckOut() {
+    public LocalDate getCheckOut() {
         return checkOut;
     }
 
-    public void setCheckOut(Date checkOut) {
+    public void setCheckOut(LocalDate checkOut) {
         this.checkOut = checkOut;
     }
 

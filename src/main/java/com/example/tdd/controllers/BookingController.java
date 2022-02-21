@@ -15,8 +15,23 @@ public class BookingController {
         return "OK";
     }
 
+    @GetMapping("/{id}")
+    public String getById(@PathVariable("id") String id) {
+        return "OK";
+    }
+
     @PostMapping
-    public ResponseEntity<BookingModel> save(BookingModel bookingModel) {
-        return ResponseEntity.status(HttpStatus.OK).body(bookingModel);
+    public ResponseEntity<BookingModel> save(@RequestBody BookingModel booking) {
+        return new ResponseEntity(booking, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookingModel> update(@PathVariable("id") String id, @RequestBody BookingModel booking) {
+        return new ResponseEntity(booking, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BookingModel> deleteEmployee(@PathVariable("id") String id) {
+        return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 }
